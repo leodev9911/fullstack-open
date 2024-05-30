@@ -1,0 +1,19 @@
+{
+  "name": "fullstack-open",
+  "version": "1.0.0",
+  "description": "This is the global repo for the Fullstack Open Bootcamp submissions ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leodev9911/fullstack-open.git"
+  },
+  "author": "Leonardo Fernández",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leodev9911/fullstack-open/issues"
+  },
+  "homepage": "https://github.com/leodev9911/fullstack-open#readme"
+}
