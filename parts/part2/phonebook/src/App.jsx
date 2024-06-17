@@ -3,12 +3,16 @@ import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
 import phonebook from './services/phonebook';
+import NotificationSucces from './components/NotificationSucces';
+import './index.css';
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
     const [filter, setFilter] = useState('');
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     useEffect(() => {
         phonebook.getAll().then((phonebookData) => setPersons(phonebookData));
@@ -50,6 +54,8 @@ const App = () => {
                 setNewName('');
                 setNewNumber('');
                 setPersons(newArr);
+                setSuccessMessage(`Added ${newPerson.name}`);
+                setTimeout(() => setSuccessMessage(null), 5000);
             });
     };
 
@@ -64,15 +70,23 @@ const App = () => {
     };
 
     const handleEditContact = (id, newPhone) => {
-        phonebook.editPhoneContact(id, newPhone).then((editedPerson) => {
-            setNewName('');
-            setNewNumber('');
-            setPersons(
-                persons.map((person) =>
-                    person.id !== id ? person : editedPerson
-                )
-            );
-        });
+        const person = persons.find(n => n.id === id);
+        phonebook
+            .editPhoneContact(id, newPhone)
+            .then((editedPerson) => {
+                setNewName('');
+                setNewNumber('');
+                setPersons(
+                    persons.map((person) =>
+                        person.id !== id ? person : editedPerson
+                    )
+                );
+            })
+            .catch((error) => {
+                console.log(error);
+                setErrorMessage(`Information of ${person.name} has already been removed from the server`);
+                setTimeout(() => setErrorMessage(null), 5000)
+            });
     };
 
     const contactsToShow = persons.filter((person) =>
@@ -82,6 +96,10 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            {successMessage ||
+                (errorMessage && (
+                    <NotificationSucces successMessage={successMessage} errorMessage={errorMessage} />
+                ))}
             <Filter filter={filter} handleChangeFilter={handleChangeFilter} />
             <h3>add a new</h3>
             <PersonForm
