@@ -1,20 +1,18 @@
-import { useEffect, useState } from "react";
-import PersonForm from "./components/PersonForm";
+import { useEffect, useState } from 'react';
+import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
-import axios from 'axios';
+import phonebook from './services/phonebook';
 
 const App = () => {
     const [persons, setPersons] = useState([]);
-    const [newName, setNewName] = useState("");
-    const [newNumber, setNewNumber] = useState("");
-    const [filter, setFilter] = useState("");
+    const [newName, setNewName] = useState('');
+    const [newNumber, setNewNumber] = useState('');
+    const [filter, setFilter] = useState('');
 
     useEffect(() => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(promise => setPersons(promise.data));
-    }, [])
+        phonebook.getAll().then((phonebookData) => setPersons(phonebookData));
+    }, []);
 
     const handleChangeName = (event) => setNewName(event.target.value);
     const handleChangeNumber = (event) => setNewNumber(event.target.value);
@@ -28,15 +26,53 @@ const App = () => {
         const isInPhoneBook = persons.find((person) => person.name === newName);
 
         if (isInPhoneBook) {
-            alert(`${newName} is already added to phonebook`);
+            const personInPhoneBook = persons.filter(
+                (person) => person.name === newName
+            )[0];
+            if (
+                window.confirm(
+                    `${newName} is already added to phonebook, replace the old number with a new one?`
+                )
+            ) {
+                handleEditContact(personInPhoneBook.id, {
+                    ...personInPhoneBook,
+                    number: newNumber,
+                });
+            }
             return;
         }
 
-        const newArr = [...persons, { name: newName, number: newNumber }];
+        phonebook
+            .createNewContact({ name: newName, number: newNumber })
+            .then((newPerson) => {
+                const newArr = [...persons, newPerson];
 
-        setNewName("");
-        setNewNumber("");
-        setPersons(newArr);
+                setNewName('');
+                setNewNumber('');
+                setPersons(newArr);
+            });
+    };
+
+    const handleDeleteContact = (id) => {
+        window.confirm('Are you sure you want to delete this contact?') &&
+            phonebook.deleteContact(id).then((deletedPerson) => {
+                const newArr = persons.filter(
+                    (person) => person.id !== deletedPerson.id
+                );
+                setPersons(newArr);
+            });
+    };
+
+    const handleEditContact = (id, newPhone) => {
+        phonebook.editPhoneContact(id, newPhone).then((editedPerson) => {
+            setNewName('');
+            setNewNumber('');
+            setPersons(
+                persons.map((person) =>
+                    person.id !== id ? person : editedPerson
+                )
+            );
+        });
     };
 
     const contactsToShow = persons.filter((person) =>
@@ -56,7 +92,10 @@ const App = () => {
                 handleChangeNumber={handleChangeNumber}
             />
             <h3>Numbers</h3>
-            <Persons contactsToShow={contactsToShow}/>
+            <Persons
+                contactsToShow={contactsToShow}
+                deleteContact={handleDeleteContact}
+            />
         </div>
     );
 };
