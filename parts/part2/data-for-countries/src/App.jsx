@@ -8,11 +8,14 @@ function App() {
     const [countries, setCountries] = useState([]);
     const [searchCountry, setSearchCountry] = useState('');
     const [filteredCountries, setFilteredCountries] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        countriesApi
-            .getAllCountries()
-            .then((countries) => setCountries(countries));
+        setLoading(true);
+        countriesApi.getAllCountries().then((countries) => {
+            setCountries(countries);
+            setLoading(false);
+        });
     }, []);
 
     const handleChange = (event) => {
@@ -26,9 +29,17 @@ function App() {
         );
     };
 
+    const handleShowCountry = (name) => {
+        setLoading(true);
+        countriesApi.getOneCountryByName(name).then((country) => {
+            setFilteredCountries([country]);
+            setLoading(false);
+        });
+    };
+
     return (
         <>
-            {countries.length !== 0 ? (
+            {countries.length !== 0 && !loading && (
                 <>
                     <CountriesForm
                         searchCountry={searchCountry}
@@ -42,6 +53,7 @@ function App() {
                                 <Country
                                     key={country.name.common}
                                     country={country.name.common}
+                                    onClick={handleShowCountry}
                                 />
                             ))}
                         {filteredCountries &&
@@ -55,9 +67,8 @@ function App() {
                             )}
                     </div>
                 </>
-            ) : (
-                <>Loading...</>
             )}
+            {loading && <>Loading...</>}
         </>
     );
 }
