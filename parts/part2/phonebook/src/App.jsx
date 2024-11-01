@@ -56,7 +56,14 @@ const App = () => {
                 setPersons(newArr);
                 setSuccessMessage(`Added ${newPerson.name}`);
                 setTimeout(() => setSuccessMessage(null), 5000);
-            });
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error.response.status === 400) {
+                    setErrorMessage(error.response.data.error);
+                    setTimeout(() => setErrorMessage(null), 5000);
+                }
+            })
     };
 
     const handleDeleteContact = (id) => {
@@ -84,8 +91,13 @@ const App = () => {
             })
             .catch((error) => {
                 console.log(error);
-                setErrorMessage(`Information of ${person.name} has already been removed from the server`);
-                setTimeout(() => setErrorMessage(null), 5000)
+                if (error.response.status === 400) {
+                    setErrorMessage(error.response.data.error);
+                    setTimeout(() => setErrorMessage(null), 5000);
+                } else {
+                    setErrorMessage(`Information of ${person.name} has already been removed from the server`);
+                    setTimeout(() => setErrorMessage(null), 5000)
+                }
             });
     };
 

@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:3000/persons';
+const baseUrl = '/api/people';
 
 const getAll = async () => axios.get(baseUrl).then((promise) => promise.data);
 
-const createNewContact = (newPerson) =>
+const createNewContact = (newPerson) => 
     axios.post(baseUrl, newPerson).then((promise) => promise.data);
 
 const deleteContact = async (id) => {
