@@ -26,6 +26,32 @@ Content-Type: application/json
     "id": "6727a705331865d588752a06" 
 }
 
+### Comment a blog
+PUT http://localhost:8080/api/blogs/670537e4b812dd4dc7a9f31d/comments
+Content-Type: application/json
+
+{
+    "title": "Hola1",
+    "author": "Helena Ruano",
+    "url": "https://midu.dev/to-reversed-to-spliced-to-sorted-with/",
+    "likes": 7,
+    "user": {
+        "username": "hele9912",
+        "name": "Helena",
+        "id": "670537a8b812dd4dc7a9f319"
+    },
+    "comments": [
+        {
+            "content": "Esto es un comentario",
+            "id": "6731529bed1832ab9bd9a091"
+        },
+        {
+            "content": "Primer comentatrio desde el front"
+        }
+    ],
+    "id": "670537e4b812dd4dc7a9f31d"
+}
+
 ### Delete a blog
 DELETE  http://localhost:8080/api/blogs/6705477dc58795c1bc0b059f
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGU5OTEyIiwiaWQiOiI2NzA1MzdhOGI4MTJkZDRkYzdhOWYzMTkiLCJpYXQiOjE3MjgzOTkxOTB9.oW2CBYiOtXbvd0FQqmceD6vlLcNnaT94BwWwYmyDfqU

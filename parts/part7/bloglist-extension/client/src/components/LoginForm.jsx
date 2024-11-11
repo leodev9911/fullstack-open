@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { login } from '../store/user'
+import { login } from '../store/login'
 import Notification from './Notification'
 
 export default function LoginForm({

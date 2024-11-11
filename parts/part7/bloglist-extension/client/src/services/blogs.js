@@ -29,8 +29,12 @@ const create = async (newBlog) => {
 }
 
 const addLike = async (editBlog) => {
-    console.log(editBlog)
     const response = await axios.put(`${baseUrl}/${editBlog.id}`, editBlog)
+    return response.data
+}
+
+const commentBlog = async (editBlog) => {
+    const response = await axios.put(`${baseUrl}/${editBlog.id}/comments`, editBlog)
     return response.data
 }
 
@@ -49,5 +53,6 @@ export default {
     setToken, 
     create, 
     addLike, 
-    deleteBlog 
+    deleteBlog,
+    commentBlog
 }

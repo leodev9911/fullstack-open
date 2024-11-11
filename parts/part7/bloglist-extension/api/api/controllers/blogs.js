@@ -58,6 +58,24 @@ blogsRouter.post('/', tokenExtractor, userExtractor, async (req, res, next) => {
     }
 })
 
+blogsRouter.put('/:id/comments', async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const blog = req.body
+
+        const updatedBlog = await Blog
+            .findByIdAndUpdate(id, blog, { new: true })
+            .populate('user', {
+                name: 1,
+                username: 1
+            })
+
+        res.send(updatedBlog)
+    } catch (error) {
+        next(error)
+    }
+})
+
 blogsRouter.put('/:id', async (req, res, next) => {
     try {
         const { id } = req.params

@@ -6,25 +6,25 @@ const initialState = window.localStorage.getItem('usserSession')
     ? JSON.parse(window.localStorage.getItem('usserSession'))
     : null
 
-const userSlice = createSlice({
+const loginSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        setUser: (state, action) => {
+        setLoginInfo: (state, action) => {
             return state = action.payload
         }
     }
 })
 
-export default userSlice.reducer
-export const { setUser } = userSlice.actions
+export default loginSlice.reducer
+export const { setLoginInfo } = loginSlice.actions
 
 export const login = (loginForm) => {
     return async dispatch => {
         try {
             const user = await loginService.login(loginForm)
             window.localStorage.setItem('usserSession', JSON.stringify(user))
-            dispatch(setUser(user))
+            dispatch(setLoginInfo(user))
         } catch (error) {
             dispatch(setNotification('incorrect username or password', 'error', 5))
             console.log(error)
@@ -34,7 +34,7 @@ export const login = (loginForm) => {
 
 export const logout = () => {
     return async dispatch => {
-        dispatch(setUser(null))
+        dispatch(setLoginInfo(null))
         window.localStorage.removeItem('usserSession')
     }
 }

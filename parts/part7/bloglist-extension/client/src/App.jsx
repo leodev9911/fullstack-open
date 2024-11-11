@@ -1,53 +1,120 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { logout } from './store/login'
 import blogService from './services/blogs'
 import LoginForm from './components/LoginForm'
-import CreateNewBlog from './components/CreateNewBlogForm'
+import CreateNew from './pages/CreateNew'
 import Notification from './components/Notification'
-import { Togglable } from './components/Togglable'
-import BlogList from './components/BlogList'
-import { logout } from './store/user'
-import { useDispatch } from 'react-redux'
+import { Routes, Route, Navigate, useMatch } from 'react-router-dom'
+import Home from './pages/Home'
+import Users from './pages/Users'
+import UserDetail from './pages/UserDetail'
+import { setUsers } from './store/users'
+import { initializeBlogs } from './store/blog'
+import BlogDetail from './pages/BlogDetail'
+import NavBar from './components/NavBar'
 
 const App = () => {
-    const newNoteToggableRef = useRef()
-    const notification = useSelector(state => state.notification)
-    const user = useSelector(state => state.user)
+    const notification = useSelector((state) => state.notification)
+    const user = useSelector((state) => state.loginInfo)
+    const users = useSelector((state) => state.users)
+    const blogs = useSelector((state) => state.blog)
     const dispatch = useDispatch()
 
     useEffect(() => {
+        if (!users || users.length === 0) {
+            dispatch(setUsers())
+        }
+        if (!blogs || blogs.length === 0) {
+            dispatch(initializeBlogs())
+        }
+
         if (user) {
             blogService.setToken(user.token)
         }
-    }, [user])
+    }, [dispatch, user, users, blogs])
+
+    const userMatch = useMatch('/users/:id')
+    const blogMatch = useMatch('/blogs/:id')
+
+    const userDetail = users.find((user) => user?.id === userMatch?.params?.id)
+    const blogDetail = blogs.find((blog) => blog?.id === blogMatch?.params?.id)
+
+    const handleLogout = () => dispatch(logout())
 
     return (
         <>
-            {user ? (
+            {user && (
                 <>
-                    <h1>blogs</h1>
-                    {(notification.error || notification.success) && (
-                        <Notification
-                            error={notification.error}
-                            success={notification.success}
-                        />
-                    )}
-                    <div>
-                        <span>{user.name} logged in</span>
-                        <button onClick={() => dispatch(logout())}>logout</button>
-                    </div>
-                    <Togglable buttonLabel="new note" ref={newNoteToggableRef}>
-                        <CreateNewBlog
-                            newNoteToggableRef={newNoteToggableRef}
-                        />
-                    </Togglable>
-                    <BlogList user={user} />
+                    <NavBar user={user} handleLogout={handleLogout} />
+                    <h1>blogs app</h1>
                 </>
-            ) : (
-                <LoginForm
-                    notification={notification}
+            )}
+            {(notification.error || notification.success) && (
+                <Notification
+                    error={notification.error}
+                    success={notification.success}
                 />
             )}
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        user ? <Home /> : <Navigate replace to={'/login'} />
+                    }
+                />
+                <Route
+                    path="/create"
+                    element={
+                        user ? (
+                            <CreateNew />
+                        ) : (
+                            <Navigate replace to={'/login'} />
+                        )
+                    }
+                />
+                <Route
+                    path="/users"
+                    element={
+                        user ? (
+                            <Users users={users} />
+                        ) : (
+                            <Navigate replace to={'/login'} />
+                        )
+                    }
+                />
+                <Route
+                    path="/users/:id"
+                    element={
+                        user ? (
+                            <UserDetail user={userDetail} />
+                        ) : (
+                            <Navigate replace to={'/login'} />
+                        )
+                    }
+                />
+                <Route
+                    path="/blogs/:id"
+                    element={
+                        user ? (
+                            <BlogDetail blog={blogDetail} />
+                        ) : (
+                            <Navigate replace to={'/login'} />
+                        )
+                    }
+                />
+                <Route
+                    path="/login"
+                    element={
+                        !user ? (
+                            <LoginForm notification={notification} />
+                        ) : (
+                            <Navigate replace to={'/'} />
+                        )
+                    }
+                />
+            </Routes>
         </>
     )
 }

@@ -14,10 +14,10 @@ const notificationSlice = createSlice({
         createNewBlog: (state, action) => {
             return state.concat(action.payload)
         },
-        likeBlogAction: (state, action) => {
+        editBlogAction: (state, action) => {
             const editedBlog = action.payload
             const editedBlogIndex = state.findIndex(blog => blog.id === editedBlog.id)
-            state[editedBlogIndex].likes = editedBlog.likes
+            state[editedBlogIndex] = editedBlog
 
             return state
         },
@@ -29,7 +29,7 @@ const notificationSlice = createSlice({
 })
 
 export default notificationSlice.reducer
-export const { setBlogs, createNewBlog, likeBlogAction, deleteBlogAction } = notificationSlice.actions
+export const { setBlogs, createNewBlog, editBlogAction, deleteBlogAction } = notificationSlice.actions
 
 export const initializeBlogs = () => {
     return async dispatch => {
@@ -62,7 +62,7 @@ export const likeBlog = (blogToEdit) => {
             const response = await blogsService.addLike(blogToEdit)
 
             if (response) {
-                dispatch(likeBlogAction(response))
+                dispatch(editBlogAction(response))
                 dispatch(setNotification(
                     `You voted ${response.title}`,
                     'success',
@@ -76,6 +76,25 @@ export const likeBlog = (blogToEdit) => {
                 5
             ))
             console.log(error)
+        }
+    }
+}
+
+export const commentBlog = (blog, commentTogglableRef, input) => {
+    return async dispatch => {
+        try {
+            const blogToEdit = structuredClone(blog)
+            blogToEdit?.comments?.push({ content: input.value })
+            blogToEdit.user = blogToEdit.user.id
+            const response =  await blogsService.commentBlog(blogToEdit)
+    
+            if (response) {
+                dispatch(editBlogAction(response))
+                input.value = ''
+                commentTogglableRef.current.toggleVisibility()
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 }

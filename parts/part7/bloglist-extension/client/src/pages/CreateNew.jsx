@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addNewBlog } from '../store/blog'
 
-export default function CreateNewBlog({ newNoteToggableRef }) {
+export default function CreateNewBlog() {
     const dispatch = useDispatch()
     const [newBlog, setNewBlog] = useState({
         title: '',
@@ -28,7 +28,6 @@ export default function CreateNewBlog({ newNoteToggableRef }) {
             author: '',
             url: '',
         })
-        newNoteToggableRef.current.toggleVisibility()
     }
 
     return (
