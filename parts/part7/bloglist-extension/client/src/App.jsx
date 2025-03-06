@@ -14,6 +14,7 @@ import { setUsers } from './store/users'
 import { initializeBlogs } from './store/blog'
 import BlogDetail from './pages/BlogDetail'
 import NavBar from './components/NavBar'
+import { Container } from '@mui/material'
 
 const App = () => {
     const notification = useSelector((state) => state.notification)
@@ -48,75 +49,79 @@ const App = () => {
             {user && (
                 <>
                     <NavBar user={user} handleLogout={handleLogout} />
-                    <h1>blogs app</h1>
                 </>
             )}
-            {(notification.error || notification.success) && (
-                <Notification
-                    error={notification.error}
-                    success={notification.success}
-                />
-            )}
-            <Routes>
-                <Route
-                    path="/"
-                    element={
-                        user ? <Home /> : <Navigate replace to={'/login'} />
-                    }
-                />
-                <Route
-                    path="/create"
-                    element={
-                        user ? (
-                            <CreateNew />
-                        ) : (
-                            <Navigate replace to={'/login'} />
-                        )
-                    }
-                />
-                <Route
-                    path="/users"
-                    element={
-                        user ? (
-                            <Users users={users} />
-                        ) : (
-                            <Navigate replace to={'/login'} />
-                        )
-                    }
-                />
-                <Route
-                    path="/users/:id"
-                    element={
-                        user ? (
-                            <UserDetail user={userDetail} />
-                        ) : (
-                            <Navigate replace to={'/login'} />
-                        )
-                    }
-                />
-                <Route
-                    path="/blogs/:id"
-                    element={
-                        user ? (
-                            <BlogDetail blog={blogDetail} />
-                        ) : (
-                            <Navigate replace to={'/login'} />
-                        )
-                    }
-                />
-                <Route
-                    path="/login"
-                    element={
-                        !user ? (
-                            <LoginForm notification={notification} />
-                        ) : (
-                            <Navigate replace to={'/'} />
-                        )
-                    }
-                />
-            </Routes>
+            <Container
+                maxWidth="xl"
+                sx={{ paddingY: '24px', height: '100%' }}
+            >
+                {(notification.error || notification.success) && (
+                    <Notification
+                        error={notification.error}
+                        success={notification.success}
+                    />
+                )}
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            user ? <Home /> : <Navigate replace to={'/login'} />
+                        }
+                    />
+                    <Route
+                        path="/create"
+                        element={
+                            user ? (
+                                <CreateNew />
+                            ) : (
+                                <Navigate replace to={'/login'} />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/users"
+                        element={
+                            user ? (
+                                <Users users={users} />
+                            ) : (
+                                <Navigate replace to={'/login'} />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/users/:id"
+                        element={
+                            user ? (
+                                <UserDetail user={userDetail} />
+                            ) : (
+                                <Navigate replace to={'/login'} />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/blogs/:id"
+                        element={
+                            user ? (
+                                <BlogDetail blog={blogDetail} />
+                            ) : (
+                                <Navigate replace to={'/login'} />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            !user ? (
+                                <LoginForm notification={notification} />
+                            ) : (
+                                <Navigate replace to={'/'} />
+                            )
+                        }
+                    />
+                </Routes>
+            </Container>
         </>
     )
 }
 
-export default App
+export default App;
